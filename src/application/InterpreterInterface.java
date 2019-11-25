@@ -468,7 +468,7 @@ public class InterpreterInterface extends javax.swing.JFrame {
                 try {
                     Thread.sleep(delay);
                 } catch (InterruptedException ex) {
-                    Logger.getLogger(InterpreterInterface.class.getName()).log(Level.SEVERE, null, ex);
+                    sysLog("thread interrupted");
                 }
             }
 
@@ -749,7 +749,7 @@ public class InterpreterInterface extends javax.swing.JFrame {
             try {
                 doInterpret();
             } catch (BadLocationException ex) {
-                Logger.getLogger(InterpreterInterface.class.getName()).log(Level.SEVERE, null, ex);
+                sysLog("highlight kinda out of bounds, but nothing broke");
             }
         }
     }
