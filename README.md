@@ -1,4 +1,24 @@
-# header
+# Java Brainfuck
+
+![image](https://i.imgur.com/tTip51r.png)
+
+## what can it do
+
+- Interpret brainfuck code
+- Accept inputs
+- Change cell size (8 bit to 32 bit)
+- Have delay
+- Breakpoints, but not really, its just a visual indication
+- Enable or disable wrapping
+- Enable or disable negative numbers
+
+### This is not optimized
+
+Will refactor later
+
+### the sample code in the picture
+
+The hello world brainfuck code is not mine, I found it in coldegolf lol, will add the link later
 
 
 ## references
