@@ -153,7 +153,7 @@ public class InterpreterInterface extends javax.swing.JFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(checkUseNegatives)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 2, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(checkDoWrapping)
                 .addContainerGap())
         );
@@ -434,6 +434,7 @@ public class InterpreterInterface extends javax.swing.JFrame {
 
         while (codePointer < code.length() && !hasError) {
             highlightText(codePointer);
+            
             char s = code.charAt(codePointer);
 
             switch(s) {
@@ -476,14 +477,18 @@ public class InterpreterInterface extends javax.swing.JFrame {
             }
 
             steps += 1;
+            
+            log("Step: " + steps + " command: " + s + " position: " + codePointer);
 
             if(Math.abs(Integer.parseInt(listMemoryTape.getItem(pointer))) > maxCellSize) {
-                errorMessage("Values too large for current bit size. Limit of " + maxCellSize);
+                errorMessage("Values too large for current bit size. Limit of " 
+                        + maxCellSize);
                 break;
             }
 
             if(memorySize > 8192) {
-                errorMessage("Consumed too much memory / too much cells. Limit of 8192 cells. Stopped at " + s);
+                errorMessage("Consumed too much memory / too much cells. "
+                        + "Limit of 8192 cells. Stopped at " + s);
                 break;
             }   
             
@@ -501,7 +506,8 @@ public class InterpreterInterface extends javax.swing.JFrame {
 
            if(usingNegatives) {
                if(usingWrapping) {
-                   if(value == (maxCellSize / 2)) value = -(maxCellSize / 2);
+                   if(value == (maxCellSize / 2)) 
+                       value = -(maxCellSize / 2);
                }
            } else {
                if(usingWrapping) {
@@ -526,7 +532,8 @@ public class InterpreterInterface extends javax.swing.JFrame {
 
            if(usingNegatives) {
                if(usingWrapping) {
-                   if(value == -((maxCellSize / 2) + 1)) value = (maxCellSize / 2) - 1;
+                   if(value == -((maxCellSize / 2) + 1)) 
+                       value = (maxCellSize / 2) - 1;
                }
            } else {
                if(usingWrapping) {
@@ -643,25 +650,25 @@ public class InterpreterInterface extends javax.swing.JFrame {
 
         for(int o = 0; o < code.length(); o += 1) {
             if(code.charAt(o) == '[') {
-                System.out.println("Found [ at " + o);
+                log("[ @ " + o);
                 openBracket.add(o);
             }
         }
 
         try {
-            System.out.println("finding pairs.....");
+            System.out.println("==FF: [] ==");
             openBracket.forEach((open) -> {
-                System.out.println("Finding pair of [ " + open);
+                log("FF: [ @ " + open);
                 int nest = 0;
                 for (int i = open + 1; i < code.length(); i += 1) {
                     if(code.charAt(i) == '[') {
-                        System.out.println("..Found [ nested at " + i);
+                        log(addChars("[ @ " + i, nest + 1, " ", true)); 
                         nest += 1;
                     } else if (code.charAt(i) == ']' && nest != 0) {
-                        System.out.println("..Found ] nested at " + i);
                         nest -= 1;
+                        log(addChars("] @ " + i, nest + 1, " ", true));
                     } else if (code.charAt(i) == ']' && nest == 0) {
-                        System.out.println("..Found [ ] pair at " + open + ":" + i);
+                        log(addChars("[ ] @ " + open + ":" + i, nest + 1, " ", true));
                         closeBracket.add(i);
                         break;
                     }
@@ -684,7 +691,9 @@ public class InterpreterInterface extends javax.swing.JFrame {
         highlighter.removeAllHighlights();
         HighlightPainter painter =
              new DefaultHighlighter.DefaultHighlightPainter(Color.RED);
+         
         highlighter.addHighlight(pos, pos + 1, painter);
+        
         textInput.setCaretPosition(pos);
     }
 
@@ -693,7 +702,10 @@ public class InterpreterInterface extends javax.swing.JFrame {
     }
 
     void gatherStatistics() {
-        labelStatus.setText(String.format("Finished. Ran through %d instructions, used %d cells", steps, memorySize));
+        labelStatus.setText(
+                String.format("Finished. Ran through %d instructions, used %d cells", 
+                        steps, 
+                        memorySize));
         
         buttonExceute.setEnabled(true);
         buttonStop.setEnabled(false);
@@ -754,8 +766,27 @@ public class InterpreterInterface extends javax.swing.JFrame {
             try {
                 doInterpret();
             } catch (BadLocationException ex) {
-                sysLog("highlight kinda out of bounds, but nothing broke");
+                sysLog("Thread: highlight kinda out of bounds, but nothing broke");
             }
         }
     }
+    
+    // <editor-fold defaultstate="collapsed" desc="Misc functions">
+    private void log(Object msg) {
+        System.out.println(String.valueOf(msg));
+    }    
+    private String addChars(String str, int pad, String ins, boolean atLeft) {
+        String offset = "";
+        
+        for (int i = 0; i < pad; i += 1) {
+            offset += ins;
+        }
+        
+        if(atLeft) {
+            return offset + str;
+        }
+        
+        return str + offset;
+    }
+    // </editor-fold> 
 }
