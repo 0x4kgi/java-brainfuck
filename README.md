@@ -5,13 +5,13 @@
 
 ## What can it do
 
- - Interpret brainfuck code
- - Accept inputs
- - Change cell size (8 bit to 32 bit)
- - Have delay
- - Breakpoints, but not really, its just a visual indication
- - Enable or disable wrapping
- - Enable or disable negative numbers
+- Interpret brainfuck code
+- Accept inputs
+- Change cell size (8 bit to 32 bit)
+- Have delay
+- Breakpoints, but not really, its just a visual indication
+- Enable or disable wrapping
+- Enable or disable negative numbers
 
 ### This is not optimized
 
@@ -23,18 +23,18 @@ The hello world brainfuck code is not mine, I found it in coldegolf lol, will ad
 
 ## references
 
-http://tutorials.jenkov.com/java-concurrency/creating-and-starting-threads.html
+[Java Threads (jenkov.com)](http://tutorials.jenkov.com/java-concurrency/creating-and-starting-threads.html)
 
-https://stackoverflow.com/questions/861346/in-java-how-do-you-determine-if-a-thread-is-running
+[How to determine of a thread is running](https://stackoverflow.com/questions/861346/in-java-how-do-you-determine-if-a-thread-is-running)
 
-https://docs.oracle.com/javase/tutorial/uiswing/components/list.html
+[Java Docs: Using List Components](https://docs.oracle.com/javase/tutorial/uiswing/components/list.html)
 
-https://docs.oracle.com/javase/7/docs/api/javax/swing/JCheckBox.html
+[Java Docs: Using JCheckbox](https://docs.oracle.com/javase/7/docs/api/javax/swing/JCheckBox.html)
 
-https://docs.oracle.com/javase/8/docs/api/javax/swing/JList.html#setSelectedValue-java.lang.Object-boolean-
+[Java Docs: JList](https://docs.oracle.com/javase/8/docs/api/javax/swing/JList.html#setSelectedValue-java.lang.Object-boolean-)
 
-https://www.guru99.com/multithreading-java.html
+[Java Multithreading](https://www.guru99.com/multithreading-java.html)
 
-https://www.geeksforgeeks.org/jradiobutton-java-swing/
+[JRadioButton](https://www.geeksforgeeks.org/jradiobutton-java-swing/)
 
-https://www.javatpoint.com/java-char-to-int
+[char to int](https://www.javatpoint.com/java-char-to-int)
