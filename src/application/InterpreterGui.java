@@ -4,49 +4,23 @@ package application;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.swing.Timer;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultHighlighter;
 import javax.swing.text.Highlighter;
 import javax.swing.text.Highlighter.HighlightPainter;
 
-public class InterpreterInterface extends javax.swing.JFrame {
-
-    //global variables
-    private boolean hasError = false;
-    private int memorySize = 1;
-    private int pointer = 0;
-    private int codePointer = 0;
-    private int steps = 0;
-    private int inputPointer = 0;
-
-    private String code = "";
-    private String input = "";
-
-    private boolean usingNegatives = false;
-    private boolean usingWrapping = true;
-
-    private int maxCellSize = 256;
-    private int delay = 50;
-
-    private List<Integer> openBracket = new ArrayList<>();
-    private List<Integer> closeBracket = new ArrayList<>();
-    
+public class InterpreterGui extends javax.swing.JFrame {
+    private final Interpreter i = new Interpreter(false);
     private InterpreterThread interp;
-    
-    private Highlighter highlighter;
+    private Highlighter highlighter; 
 
-    public InterpreterInterface() {
+    public InterpreterGui() {
         initComponents();
 
         Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
         setLocation((dim.width/2)-(this.getSize().width/2), (dim.height/2)-(this.getSize().height/2));
+        
+        i.setComponents(listMemoryTape, textInput, textOutput, textUserInput);
     }
 
     @SuppressWarnings("unchecked")
@@ -67,25 +41,28 @@ public class InterpreterInterface extends javax.swing.JFrame {
         jLabel3 = new javax.swing.JLabel();
         textUserInput = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
-        jPanel1 = new javax.swing.JPanel();
+        panelWrapping = new javax.swing.JPanel();
         checkUseNegatives = new javax.swing.JCheckBox();
         checkDoWrapping = new javax.swing.JCheckBox();
-        jPanel2 = new javax.swing.JPanel();
+        panelCellSize = new javax.swing.JPanel();
         radio_8bit = new javax.swing.JRadioButton();
         radio_16bit = new javax.swing.JRadioButton();
         radio_32bit = new javax.swing.JRadioButton();
         radio_4bit = new javax.swing.JRadioButton();
-        jPanel3 = new javax.swing.JPanel();
+        panelDelay = new javax.swing.JPanel();
         sliderDelay = new javax.swing.JSlider();
         labelDelayDisplay = new javax.swing.JLabel();
         checkNoDelay = new javax.swing.JCheckBox();
         buttonStop = new javax.swing.JButton();
+        jMenuBar1 = new javax.swing.JMenuBar();
+        jMenu1 = new javax.swing.JMenu();
+        jMenu2 = new javax.swing.JMenu();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Interpreter");
         setMaximumSize(null);
         setMinimumSize(new java.awt.Dimension(920, 570));
-        setPreferredSize(new java.awt.Dimension(920, 570));
+        setPreferredSize(null);
 
         listMemoryTape.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         listMemoryTape.setFont(new java.awt.Font("Monospaced", 0, 15)); // NOI18N
@@ -104,6 +81,11 @@ public class InterpreterInterface extends javax.swing.JFrame {
                 buttonExceuteActionPerformed(evt);
             }
         });
+        buttonExceute.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
+            public void propertyChange(java.beans.PropertyChangeEvent evt) {
+                buttonExceutePropertyChange(evt);
+            }
+        });
 
         buttonReset.setText("Reset");
         buttonReset.setEnabled(false);
@@ -117,6 +99,13 @@ public class InterpreterInterface extends javax.swing.JFrame {
         textInput.setFont(new java.awt.Font("Monospaced", 0, 14)); // NOI18N
         textInput.setLineWrap(true);
         textInput.setRows(5);
+        textInput.setSelectedTextColor(new java.awt.Color(0, 0, 0));
+        textInput.setSelectionColor(new java.awt.Color(153, 255, 255));
+        textInput.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                textInputKeyReleased(evt);
+            }
+        });
         jScrollPane2.setViewportView(textInput);
 
         labelStatus.setText("...");
@@ -131,26 +120,26 @@ public class InterpreterInterface extends javax.swing.JFrame {
 
         jLabel4.setText("Memory:");
 
-        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Wrapping"));
+        panelWrapping.setBorder(javax.swing.BorderFactory.createTitledBorder("Wrapping"));
 
         checkUseNegatives.setText("Use negatives");
 
         checkDoWrapping.setText("No wrapping");
 
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
+        javax.swing.GroupLayout panelWrappingLayout = new javax.swing.GroupLayout(panelWrapping);
+        panelWrapping.setLayout(panelWrappingLayout);
+        panelWrappingLayout.setHorizontalGroup(
+            panelWrappingLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panelWrappingLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(panelWrappingLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(checkUseNegatives)
                     .addComponent(checkDoWrapping))
                 .addContainerGap(76, Short.MAX_VALUE))
         );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
+        panelWrappingLayout.setVerticalGroup(
+            panelWrappingLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panelWrappingLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(checkUseNegatives)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -158,7 +147,7 @@ public class InterpreterInterface extends javax.swing.JFrame {
                 .addContainerGap())
         );
 
-        jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder("Cell size"));
+        panelCellSize.setBorder(javax.swing.BorderFactory.createTitledBorder("Cell size"));
 
         groupBitSize.add(radio_8bit);
         radio_8bit.setSelected(true);
@@ -173,27 +162,27 @@ public class InterpreterInterface extends javax.swing.JFrame {
         groupBitSize.add(radio_4bit);
         radio_4bit.setText("4 bits");
 
-        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
-        jPanel2.setLayout(jPanel2Layout);
-        jPanel2Layout.setHorizontalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
+        javax.swing.GroupLayout panelCellSizeLayout = new javax.swing.GroupLayout(panelCellSize);
+        panelCellSize.setLayout(panelCellSizeLayout);
+        panelCellSizeLayout.setHorizontalGroup(
+            panelCellSizeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panelCellSizeLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(panelCellSizeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(panelCellSizeLayout.createSequentialGroup()
+                        .addGroup(panelCellSizeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(radio_16bit)
                             .addComponent(radio_8bit))
                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(panelCellSizeLayout.createSequentialGroup()
+                        .addGroup(panelCellSizeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(radio_4bit)
                             .addComponent(radio_32bit))
                         .addGap(0, 0, Short.MAX_VALUE))))
         );
-        jPanel2Layout.setVerticalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
+        panelCellSizeLayout.setVerticalGroup(
+            panelCellSizeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panelCellSizeLayout.createSequentialGroup()
                 .addComponent(radio_4bit)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(radio_8bit)
@@ -204,7 +193,7 @@ public class InterpreterInterface extends javax.swing.JFrame {
                 .addGap(10, 10, 10))
         );
 
-        jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder("Delay"));
+        panelDelay.setBorder(javax.swing.BorderFactory.createTitledBorder("Delay"));
 
         sliderDelay.setMajorTickSpacing(100);
         sliderDelay.setMaximum(1000);
@@ -227,26 +216,26 @@ public class InterpreterInterface extends javax.swing.JFrame {
             }
         });
 
-        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
-        jPanel3.setLayout(jPanel3Layout);
-        jPanel3Layout.setHorizontalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel3Layout.createSequentialGroup()
+        javax.swing.GroupLayout panelDelayLayout = new javax.swing.GroupLayout(panelDelay);
+        panelDelay.setLayout(panelDelayLayout);
+        panelDelayLayout.setHorizontalGroup(
+            panelDelayLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panelDelayLayout.createSequentialGroup()
                 .addGap(75, 75, 75)
                 .addComponent(labelDelayDisplay)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addGroup(jPanel3Layout.createSequentialGroup()
+            .addGroup(panelDelayLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel3Layout.createSequentialGroup()
+                .addGroup(panelDelayLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(panelDelayLayout.createSequentialGroup()
                         .addComponent(checkNoDelay)
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addComponent(sliderDelay, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
                 .addContainerGap())
         );
-        jPanel3Layout.setVerticalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel3Layout.createSequentialGroup()
+        panelDelayLayout.setVerticalGroup(
+            panelDelayLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panelDelayLayout.createSequentialGroup()
                 .addComponent(labelDelayDisplay)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(sliderDelay, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -262,6 +251,14 @@ public class InterpreterInterface extends javax.swing.JFrame {
                 buttonStopActionPerformed(evt);
             }
         });
+
+        jMenu1.setText("File");
+        jMenuBar1.add(jMenu1);
+
+        jMenu2.setText("Edit");
+        jMenuBar1.add(jMenu2);
+
+        setJMenuBar(jMenuBar1);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -295,9 +292,9 @@ public class InterpreterInterface extends javax.swing.JFrame {
                                 .addComponent(listMemoryTape, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                                    .addComponent(panelDelay, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(panelCellSize, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(panelWrapping, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(labelStatus)
                         .addGap(0, 0, Short.MAX_VALUE)))
@@ -316,15 +313,15 @@ public class InterpreterInterface extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(panelWrapping, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(panelCellSize, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(panelDelay, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 224, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 23, Short.MAX_VALUE)
                         .addComponent(jLabel3)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(textUserInput, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -336,7 +333,7 @@ public class InterpreterInterface extends javax.swing.JFrame {
                                 .addComponent(buttonStop, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.TRAILING))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 208, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(listMemoryTape, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(labelStatus)
@@ -345,31 +342,30 @@ public class InterpreterInterface extends javax.swing.JFrame {
 
         layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {buttonExceute, buttonReset, buttonStop});
 
+        layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {jScrollPane1, jScrollPane2});
+
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void buttonExceuteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonExceuteActionPerformed
         reset();
 
-        setSettings();
+        setSettings();       
         
-        highlighter = textInput.getHighlighter();
+        i.setCode(textInput.getText());
+        i.setInput(textUserInput.getText());        
         
         buttonExceute.setEnabled(false);
         buttonStop.setEnabled(true);
         
         labelStatus.setText("Running...");
         interp = new InterpreterThread();        
-        interp.start();      
-        
-        if(!interp.isAlive()) {
-            buttonExceute.setEnabled(true);
-        }      
+        interp.start();           
     }//GEN-LAST:event_buttonExceuteActionPerformed
 
     private void buttonResetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonResetActionPerformed
         reset();
-        
+        interp = null;
         buttonExceute.setEnabled(true);
         buttonReset.setEnabled(false);
         buttonStop.setEnabled(false);
@@ -377,7 +373,7 @@ public class InterpreterInterface extends javax.swing.JFrame {
 
     private void sliderDelayStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_sliderDelayStateChanged
         labelDelayDisplay.setText(String.valueOf(sliderDelay.getValue()) + "ms");
-        delay = sliderDelay.getValue();
+        i.setDelay(sliderDelay.getValue());      
     }//GEN-LAST:event_sliderDelayStateChanged
 
     private void checkNoDelayActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_checkNoDelayActionPerformed
@@ -391,13 +387,22 @@ public class InterpreterInterface extends javax.swing.JFrame {
     }//GEN-LAST:event_checkNoDelayActionPerformed
 
     private void buttonStopActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonStopActionPerformed
-        code = "";
+        i.stop();
+        interp = null;
         labelStatus.setText("Stopped.");
         
         buttonExceute.setEnabled(true);
         buttonReset.setEnabled(true);
         buttonStop.setEnabled(false);
     }//GEN-LAST:event_buttonStopActionPerformed
+
+    private void textInputKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_textInputKeyReleased
+        //i.setCode(textInput.getText());
+    }//GEN-LAST:event_textInputKeyReleased
+
+    private void buttonExceutePropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_buttonExceutePropertyChange
+        
+    }//GEN-LAST:event_buttonExceutePropertyChange
 
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
@@ -413,278 +418,40 @@ public class InterpreterInterface extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(InterpreterInterface.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(InterpreterGui.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
         //</editor-fold>
 
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(() -> {
-            new InterpreterInterface().setVisible(true);
+            new InterpreterGui().setVisible(true);
         });
     }
-
-    //BrainFuck Instructions
-    void doInterpret() throws BadLocationException {
-        code = textInput.getText();
-        input = textUserInput.getText();
-
-        scanForLoops(code);
-
-        while (codePointer < code.length() && !hasError) {
-            highlightText(codePointer);
-            
-            char s = code.charAt(codePointer);
-
-            switch(s) {
-                case '+':
-                    inc();
-                    break;
-                case '-':
-                    dec();
-                    break;
-                case '>':
-                    mov(true);
-                    break;
-                case '<':
-                    mov(false);
-                    break;
-                case '.':
-                    output();
-                    break;
-                case ',':
-                    input();
-                    break;
-                case '[':
-                    jmp();
-                    break;
-                case ']':
-                    jmpBck();
-                    break;
-                default:
-                    codePointer += 1;
-                    continue;
-            } //switch
-            codePointer += 1;
-
-            if(delay > 0) {
-                try {
-                    Thread.sleep(delay);
-                } catch (InterruptedException ex) {
-                    sysLog("thread interrupted");
-                }
-            }
-
-            steps += 1;
-            
-            log("Step: " + steps + " command: " + s + " position: " + codePointer);
-
-            if(Math.abs(Integer.parseInt(listMemoryTape.getItem(pointer))) > maxCellSize) {
-                errorMessage("Values too large for current bit size. Limit of " 
-                        + maxCellSize);
-                break;
-            }
-
-            if(memorySize > 8192) {
-                errorMessage("Consumed too much memory / too much cells. "
-                        + "Limit of 8192 cells. Stopped at " + s);
-                break;
-            }   
-            
-        }
-        
-        gatherStatistics();
-    }
-
-    void inc() {
-        int value;
-        try {
-           value = Integer.parseInt(listMemoryTape.getItem(pointer));
-
-           value += 1;
-
-           if(usingNegatives) {
-               if(usingWrapping) {
-                   if(value == (maxCellSize / 2)) 
-                       value = -(maxCellSize / 2);
-               }
-           } else {
-               if(usingWrapping) {
-                   if(value == maxCellSize) value = 0;
-               }
-           }
-
-           listMemoryTape.replaceItem("" + value, pointer);
-        } catch (Exception e) {
-            listMemoryTape.add(String.valueOf(1));
-        }
-
-        listMemoryTape.select(pointer);
-    }
-
-    void dec() {
-        int value;
-        try {
-           value = Integer.parseInt(listMemoryTape.getItem(pointer));
-
-           value -= 1;
-
-           if(usingNegatives) {
-               if(usingWrapping) {
-                   if(value == -((maxCellSize / 2) + 1)) 
-                       value = (maxCellSize / 2) - 1;
-               }
-           } else {
-               if(usingWrapping) {
-                   if(value == -1) value = maxCellSize - 1;
-               }
-           }
-
-           listMemoryTape.replaceItem("" + value, pointer);
-        } catch (Exception e) {
-            listMemoryTape.add(String.valueOf(maxCellSize - 1));
-        }
-
-        listMemoryTape.select(pointer);
-    }
-
-    void mov(boolean ins) {
-        if(ins) { // >
-            pointer += 1;
-
-            if (pointer == memorySize) {
-                listMemoryTape.add(0 + "");
-                memorySize += 1;
-            }
-        } else { // <
-            pointer -= 1;
-
-            if (pointer < 0) {
-                listMemoryTape.add(0 + "", 0);
-                pointer = 0;
-                memorySize += 1;
-            }
-        }
-        if(!hasError) listMemoryTape.select(pointer);
-    }
-
-    void output() {
-        int value = Integer.parseInt(listMemoryTape.getItem(pointer));
-        char ascii = (char) value;
-
-        textOutput.append(String.valueOf(ascii));
-        textOutput.setCaretPosition(textOutput.getText().length());
-    }
-
-    void input() {
-
-        if(inputPointer >= input.length()) {
-            listMemoryTape.replaceItem(String.valueOf(0), pointer);
-        } else {
-            int i = input.charAt(inputPointer);
-
-            if(i >= maxCellSize) i %= maxCellSize;
-
-            listMemoryTape.replaceItem(String.valueOf(i), pointer);
-        }
-
-        inputPointer += 1;
-    }
-
-    void jmp() {
-        int value = Integer.parseInt(listMemoryTape.getItem(pointer));
-
-        if (value == 0) {
-            codePointer = closeBracket.get(openBracket.indexOf(codePointer));
+    
+    public class InterpreterThread extends Thread {
+        @Override
+        public void run() {
+            i.start();
         }
     }
-
-    void jmpBck() {
-        int value = Integer.parseInt(listMemoryTape.getItem(pointer));
-        int toWhere;
-
-        try {
-            toWhere = openBracket.get(closeBracket.indexOf(codePointer));
-
-            if(value != 0) codePointer = toWhere;
-        } catch (Exception e) {
-            errorMessage("Unmatched loop brackets found.");
-        }
-    }
-    //End of BrainFuck instructions
 
     //misc functions
-    void reset() {
-        //interp.stop();
-        
+    void reset() {        
         listMemoryTape.removeAll();
         listMemoryTape.add(0 + "");
         listMemoryTape.select(0);
 
-        codePointer = 0;
-        memorySize = 1;
-        pointer = 0;
-        inputPointer = 0;
-
-        hasError = false;
-
-        steps = 0;
 
         textOutput.setText("");
         labelStatus.setText("...");
-        code = "";
-
-        openBracket = null;
-        closeBracket = null;
     }
 
     void errorMessage(String msg) {
-        hasError = true;
+        //hasError = true;
         labelStatus.setText("ERROR: " + msg);
-    }
-
-    void scanForLoops(String code) {
-        openBracket = new ArrayList<>();
-        closeBracket = new ArrayList<>();
-
-        for(int o = 0; o < code.length(); o += 1) {
-            if(code.charAt(o) == '[') {
-                log("[ @ " + o);
-                openBracket.add(o);
-            }
-        }
-
-        try {
-            System.out.println("==FF: [] ==");
-            openBracket.forEach((open) -> {
-                log("FF: [ @ " + open);
-                int nest = 0;
-                for (int i = open + 1; i < code.length(); i += 1) {
-                    if(code.charAt(i) == '[') {
-                        log(addChars("[ @ " + i, nest + 1, " ", true)); 
-                        nest += 1;
-                    } else if (code.charAt(i) == ']' && nest != 0) {
-                        nest -= 1;
-                        log(addChars("] @ " + i, nest + 1, " ", true));
-                    } else if (code.charAt(i) == ']' && nest == 0) {
-                        log(addChars("[ ] @ " + open + ":" + i, nest + 1, " ", true));
-                        closeBracket.add(i);
-                        break;
-                    }
-                }
-            });
-        } catch (Exception e) {
-            System.out.println("Empty opening loop");
-        }
-
-
-        System.out.println("open: " + openBracket);
-        System.out.println("clos: " + closeBracket);
-
-        if(openBracket.size() != closeBracket.size()) {
-            errorMessage("Mismatched loop brackets");
-        }
     }
 
     void highlightText(int pos) throws BadLocationException {        
@@ -702,10 +469,7 @@ public class InterpreterInterface extends javax.swing.JFrame {
     }
 
     void gatherStatistics() {
-        labelStatus.setText(
-                String.format("Finished. Ran through %d instructions, used %d cells", 
-                        steps, 
-                        memorySize));
+        labelStatus.setText(String.format(""));
         
         buttonExceute.setEnabled(true);
         buttonStop.setEnabled(false);
@@ -713,20 +477,19 @@ public class InterpreterInterface extends javax.swing.JFrame {
 
     void setSettings() {
         int power = 1;
-
-        usingNegatives = checkUseNegatives.isSelected();
-        usingWrapping = !checkDoWrapping.isSelected();
+        int delay = sliderDelay.getValue();
+        boolean usingNegatives = checkUseNegatives.isSelected();
+        boolean usingWrapping = !checkDoWrapping.isSelected();
 
         if(radio_4bit.isSelected()) power = 4;
         else if(radio_8bit.isSelected()) power = 8;
         else if(radio_16bit.isSelected()) power = 16;
         else if(radio_32bit.isSelected()) power = 32;
 
-        maxCellSize = (int) Math.pow(2, power);
-
-        delay = sliderDelay.getValue();
-
-        System.out.println(memorySize);
+        int maxCellSize = (int) Math.pow(2, power);        
+        
+        i.setSettings(usingNegatives, usingWrapping, maxCellSize);
+        i.setDelay(delay);
     }
     //end of misc functions
 
@@ -742,14 +505,17 @@ public class InterpreterInterface extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
-    private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
-    private javax.swing.JPanel jPanel3;
+    private javax.swing.JMenu jMenu1;
+    private javax.swing.JMenu jMenu2;
+    private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JLabel labelDelayDisplay;
     private javax.swing.JLabel labelStatus;
     private java.awt.List listMemoryTape;
+    private javax.swing.JPanel panelCellSize;
+    private javax.swing.JPanel panelDelay;
+    private javax.swing.JPanel panelWrapping;
     private javax.swing.JRadioButton radio_16bit;
     private javax.swing.JRadioButton radio_32bit;
     private javax.swing.JRadioButton radio_4bit;
@@ -760,33 +526,4 @@ public class InterpreterInterface extends javax.swing.JFrame {
     private javax.swing.JTextField textUserInput;
     // End of variables declaration//GEN-END:variables
 
-    public class InterpreterThread extends Thread {
-        @Override
-        public void run() {
-            try {
-                doInterpret();
-            } catch (BadLocationException ex) {
-                sysLog("Thread: highlight kinda out of bounds, but nothing broke");
-            }
-        }
-    }
-    
-    // <editor-fold defaultstate="collapsed" desc="Misc functions">
-    private void log(Object msg) {
-        System.out.println(String.valueOf(msg));
-    }    
-    private String addChars(String str, int pad, String ins, boolean atLeft) {
-        String offset = "";
-        
-        for (int i = 0; i < pad; i += 1) {
-            offset += ins;
-        }
-        
-        if(atLeft) {
-            return offset + str;
-        }
-        
-        return str + offset;
-    }
-    // </editor-fold> 
 }
