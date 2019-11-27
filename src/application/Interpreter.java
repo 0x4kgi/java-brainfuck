@@ -214,12 +214,12 @@ public class Interpreter {
            value -= 1;
 
            if(usingNegatives) {
-               if(usingWrapping) {
-                   if(value == -((maxCellSize / 2) + 1)) value = (maxCellSize / 2) - 1;
+               if(usingWrapping && value == -((maxCellSize / 2) + 1)) {
+                   value = (maxCellSize / 2) - 1;
                }
            } else {
-               if(usingWrapping) {
-                   if(value == -1) value = maxCellSize - 1;
+               if(usingWrapping && value == -1) {
+                   value = maxCellSize - 1;
                }
            }
 
