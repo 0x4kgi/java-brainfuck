@@ -5,13 +5,13 @@
 
 ## What can it do
 
-- Interpret brainfuck code
-- Accept inputs
-- Change cell size (8 bit to 32 bit)
-- Have delay
-- Breakpoints, but not really, its just a visual indication
-- Enable or disable wrapping
-- Enable or disable negative numbers
+  - Interpret brainfuck code
+  - Accept inputs
+  - Change cell size (8 bit to 32 bit)
+  - Have delay
+  - Breakpoints, but not really, its just a visual indication
+  - Enable or disable wrapping
+  - Enable or disable negative numbers
 
 ### This is not optimized
 
