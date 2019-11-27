@@ -2,13 +2,15 @@
 package application;
 import java.awt.Dimension;
 import java.awt.Toolkit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultHighlighter;
 import javax.swing.text.Highlighter;
 import javax.swing.text.Highlighter.HighlightPainter;
 
 public class InterpreterGui extends javax.swing.JFrame {
-    private final Interpreter i = new Interpreter(false);
+    private final Interpreter i = new Interpreter(5);
     private InterpreterThread interp;
     private Highlighter highlighter; 
 
@@ -26,6 +28,7 @@ public class InterpreterGui extends javax.swing.JFrame {
     private void initComponents() {
 
         groupBitSize = new javax.swing.ButtonGroup();
+        groupWrapCheckboxes = new javax.swing.ButtonGroup();
         listMemoryTape = new java.awt.List();
         jScrollPane1 = new javax.swing.JScrollPane();
         textOutput = new javax.swing.JTextArea();
@@ -79,11 +82,6 @@ public class InterpreterGui extends javax.swing.JFrame {
                 buttonExceuteActionPerformed(evt);
             }
         });
-        buttonExceute.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
-            public void propertyChange(java.beans.PropertyChangeEvent evt) {
-                buttonExceutePropertyChange(evt);
-            }
-        });
 
         buttonReset.setText("Reset");
         buttonReset.setEnabled(false);
@@ -99,11 +97,6 @@ public class InterpreterGui extends javax.swing.JFrame {
         textInput.setRows(5);
         textInput.setSelectedTextColor(new java.awt.Color(0, 0, 0));
         textInput.setSelectionColor(new java.awt.Color(153, 255, 255));
-        textInput.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyReleased(java.awt.event.KeyEvent evt) {
-                textInputKeyReleased(evt);
-            }
-        });
         jScrollPane2.setViewportView(textInput);
 
         labelStatus.setText("...");
@@ -120,8 +113,10 @@ public class InterpreterGui extends javax.swing.JFrame {
 
         panelWrapping.setBorder(javax.swing.BorderFactory.createTitledBorder("Wrapping"));
 
+        groupWrapCheckboxes.add(checkUseNegatives);
         checkUseNegatives.setText("Use negatives");
 
+        groupWrapCheckboxes.add(checkDoWrapping);
         checkDoWrapping.setText("No wrapping");
 
         javax.swing.GroupLayout panelWrappingLayout = new javax.swing.GroupLayout(panelWrapping);
@@ -394,14 +389,6 @@ public class InterpreterGui extends javax.swing.JFrame {
         buttonStop.setEnabled(false);
     }//GEN-LAST:event_buttonStopActionPerformed
 
-    private void textInputKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_textInputKeyReleased
-        //i.setCode(textInput.getText());
-    }//GEN-LAST:event_textInputKeyReleased
-
-    private void buttonExceutePropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_buttonExceutePropertyChange
-        
-    }//GEN-LAST:event_buttonExceutePropertyChange
-
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
@@ -432,12 +419,16 @@ public class InterpreterGui extends javax.swing.JFrame {
     public class InterpreterThread extends Thread {
         @Override
         public void run() {
-            i.start();
+            try {
+                i.start();
+            } catch (BadLocationException ex) {
+                Logger.getLogger(InterpreterGui.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
     }
 
     //misc functions
-    void reset() {        
+    private void reset() {        
         listMemoryTape.removeAll();
         listMemoryTape.add(0 + "");
         listMemoryTape.select(0);
@@ -447,33 +438,14 @@ public class InterpreterGui extends javax.swing.JFrame {
         labelStatus.setText("...");
     }
 
-    void errorMessage(String msg) {
-        //hasError = true;
-        labelStatus.setText("ERROR: " + msg);
-    }
-
-    void highlightText(int pos) throws BadLocationException {        
-        highlighter.removeAllHighlights();
-        HighlightPainter painter =
-             new DefaultHighlighter.DefaultHighlightPainter(java.awt.Color.RED);
-         
-        highlighter.addHighlight(pos, pos + 1, painter);
-        
-        textInput.setCaretPosition(pos);
-    }
-
-    void sysLog(Object msg) {
-        System.out.println("Log: " + String.valueOf(msg));
-    }
-
-    void gatherStatistics() {
+    private void gatherStatistics() {
         labelStatus.setText(String.format(""));
         
         buttonExceute.setEnabled(true);
         buttonStop.setEnabled(false);
     }
 
-    void setSettings() {
+    private void setSettings() {
         int power = 1;
         int delay = sliderDelay.getValue();
         boolean usingNegatives = checkUseNegatives.isSelected();
@@ -499,6 +471,7 @@ public class InterpreterGui extends javax.swing.JFrame {
     private javax.swing.JCheckBox checkNoDelay;
     private javax.swing.JCheckBox checkUseNegatives;
     private javax.swing.ButtonGroup groupBitSize;
+    private javax.swing.ButtonGroup groupWrapCheckboxes;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;

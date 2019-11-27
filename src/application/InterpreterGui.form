@@ -4,6 +4,8 @@
   <NonVisualComponents>
     <Component class="javax.swing.ButtonGroup" name="groupBitSize">
     </Component>
+    <Component class="javax.swing.ButtonGroup" name="groupWrapCheckboxes">
+    </Component>
     <Menu class="javax.swing.JMenuBar" name="jMenuBar1">
       <SubComponents>
         <Menu class="javax.swing.JMenu" name="jMenu1">
@@ -187,7 +189,6 @@
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="buttonExceuteActionPerformed"/>
-        <EventHandler event="propertyChange" listener="java.beans.PropertyChangeListener" parameters="java.beans.PropertyChangeEvent" handler="buttonExceutePropertyChange"/>
       </Events>
     </Component>
     <Component class="javax.swing.JButton" name="buttonReset">
@@ -221,9 +222,6 @@
               <Color blue="ff" green="ff" red="99" type="rgb"/>
             </Property>
           </Properties>
-          <Events>
-            <EventHandler event="keyReleased" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="textInputKeyReleased"/>
-          </Events>
         </Component>
       </SubComponents>
     </Container>
@@ -296,11 +294,17 @@
       <SubComponents>
         <Component class="javax.swing.JCheckBox" name="checkUseNegatives">
           <Properties>
+            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+              <ComponentRef name="groupWrapCheckboxes"/>
+            </Property>
             <Property name="text" type="java.lang.String" value="Use negatives"/>
           </Properties>
         </Component>
         <Component class="javax.swing.JCheckBox" name="checkDoWrapping">
           <Properties>
+            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+              <ComponentRef name="groupWrapCheckboxes"/>
+            </Property>
             <Property name="text" type="java.lang.String" value="No wrapping"/>
           </Properties>
         </Component>
