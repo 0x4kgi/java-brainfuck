@@ -87,15 +87,33 @@ public class Interpreter {
         while(codePointer < code.length() && isRunning) {            
             char c = code.charAt(codePointer);
             switch(c) {
-                case '+': inc(); break;
-                case '-': dec(); break;
-                case '>': movfwd(); break;
-                case '<': movbck(); break;
-                case '[': jmpfwd(); break;
-                case ']': jmpbck(); break;
-                case '.': output(); break;
-                case ',': input(); break;
-                default: codePointer += 1; continue;
+                case '+': 
+                    inc(); 
+                    break;
+                case '-': 
+                    dec(); 
+                    break;
+                case '>': 
+                    movfwd(); 
+                    break;
+                case '<': 
+                    movbck(); 
+                    break;
+                case '[': 
+                    jmpfwd(); 
+                    break;
+                case ']': 
+                    jmpbck(); 
+                    break;
+                case '.': 
+                    output(); 
+                    break;
+                case ',': 
+                    input(); 
+                    break;
+                default: 
+                    codePointer += 1; 
+                    continue;
             } 
             codePointer += 1;
             
