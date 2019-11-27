@@ -38,9 +38,9 @@ public class Interpreter {
     
     //Components to use
     private java.awt.List memoryTape;
-    private javax.swing.JTextArea textInput;
-    private javax.swing.JTextArea textOutput;
-    private javax.swing.JTextField textUserInput;
+    private JTextArea textInput;
+    private JTextArea textOutput;
+    private JTextField textUserInput;
     
     public Interpreter(boolean doLogs) {
         this.doLogs = doLogs;
@@ -189,12 +189,12 @@ public class Interpreter {
            value += 1;
 
            if(usingNegatives) {
-               if(usingWrapping) {
-                   if(value == (maxCellSize / 2)) value = -(maxCellSize / 2);
+               if(usingWrapping && value == (maxCellSize / 2)) {
+                   value = -(maxCellSize / 2);
                }
            } else {
-               if(usingWrapping) {
-                   if(value == maxCellSize) value = 0;
+               if(usingWrapping && value == maxCellSize) {
+                   value = 0;
                }
            }
 

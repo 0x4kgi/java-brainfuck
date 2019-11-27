@@ -1,7 +1,5 @@
 
 package application;
-
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import javax.swing.text.BadLocationException;
@@ -457,7 +455,7 @@ public class InterpreterGui extends javax.swing.JFrame {
     void highlightText(int pos) throws BadLocationException {        
         highlighter.removeAllHighlights();
         HighlightPainter painter =
-             new DefaultHighlighter.DefaultHighlightPainter(Color.RED);
+             new DefaultHighlighter.DefaultHighlightPainter(java.awt.Color.RED);
          
         highlighter.addHighlight(pos, pos + 1, painter);
         
