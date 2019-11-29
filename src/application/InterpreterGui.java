@@ -5,7 +5,6 @@ import java.awt.Toolkit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.text.BadLocationException;
-import javax.swing.text.Highlighter;
 
 public class InterpreterGui extends javax.swing.JFrame {
     private final Interpreter i = new Interpreter(5);
