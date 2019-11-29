@@ -2,6 +2,7 @@
 package application;
 import java.awt.Dimension;
 import java.awt.Toolkit;
+import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.text.BadLocationException;
@@ -9,6 +10,7 @@ import javax.swing.text.BadLocationException;
 public class InterpreterGui extends javax.swing.JFrame {
     private final Interpreter i = new Interpreter(5);
     private InterpreterThread interp;
+    private Long time = new Long(0);
 
     public InterpreterGui() {
         initComponents();
@@ -94,7 +96,7 @@ public class InterpreterGui extends javax.swing.JFrame {
         textInput.setSelectionColor(new java.awt.Color(153, 255, 255));
         jScrollPane2.setViewportView(textInput);
 
-        labelStatus.setText("...");
+        labelStatus.setText("Ready");
 
         jLabel1.setText("Code:");
 
@@ -306,10 +308,10 @@ public class InterpreterGui extends javax.swing.JFrame {
                         .addComponent(panelCellSize, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(panelDelay, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE))
+                        .addGap(0, 181, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 23, Short.MAX_VALUE)
+                        .addComponent(jScrollPane2)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel3)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(textUserInput, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -330,13 +332,13 @@ public class InterpreterGui extends javax.swing.JFrame {
 
         layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {buttonExceute, buttonReset, buttonStop});
 
-        layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {jScrollPane1, jScrollPane2});
-
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void buttonExceuteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonExceuteActionPerformed
         reset();
+        
+        logTimeTaken();
 
         setSettings();       
         
@@ -354,9 +356,8 @@ public class InterpreterGui extends javax.swing.JFrame {
     private void buttonResetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonResetActionPerformed
         reset();
         interp = null;
-        buttonExceute.setEnabled(true);
-        buttonReset.setEnabled(false);
-        buttonStop.setEnabled(false);
+        
+        resetState();
     }//GEN-LAST:event_buttonResetActionPerformed
 
     private void sliderDelayStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_sliderDelayStateChanged
@@ -379,11 +380,32 @@ public class InterpreterGui extends javax.swing.JFrame {
         interp = null;
         labelStatus.setText("Stopped.");
         
+        resetState();
+    }//GEN-LAST:event_buttonStopActionPerformed
+    
+    private void resetState() {
         buttonExceute.setEnabled(true);
         buttonReset.setEnabled(true);
         buttonStop.setEnabled(false);
-    }//GEN-LAST:event_buttonStopActionPerformed
+        
+        interp = null;
 
+        logTimeTaken();
+        
+        time = new Long(0);
+    }
+    
+    private void logTimeTaken() {
+        Long date = new Date().getTime();
+        
+        if(time == 0) {
+            time = -date;
+        } else {
+            time += date;
+            labelStatus.setText(labelStatus.getText() + " in " + time + " ms");            
+        }       
+    }
+    
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
@@ -415,7 +437,11 @@ public class InterpreterGui extends javax.swing.JFrame {
         @Override
         public void run() {
             try {
-                i.start();
+                i.start();                   
+                labelStatus.setText(i.getFinishingStatus());
+                labelStatus.setText(i.getFinishingStatus());
+                
+                resetState();
             } catch (BadLocationException ex) {
                 Logger.getLogger(InterpreterGui.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -430,7 +456,7 @@ public class InterpreterGui extends javax.swing.JFrame {
 
 
         textOutput.setText("");
-        labelStatus.setText("...");
+        labelStatus.setText("Ready");
     }
 
 //    private void gatherStatistics() {

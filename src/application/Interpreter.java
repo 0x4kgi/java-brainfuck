@@ -33,6 +33,9 @@ public class Interpreter {
     private int codePointer = 0;
     private int inputPointer = 0;
     
+    //some misc lol
+    private int prevMemorySize = 0;
+    
     //Interpreter Loop management
     private LoopIndex loopIndex;
     
@@ -46,6 +49,10 @@ public class Interpreter {
     
     //Check if the code is running
     private boolean isRunning = false;
+    
+    //Status related variables
+    private int steps = 0;
+    private String status;
     
     //Components to use
     private java.awt.List memoryTape;
@@ -86,23 +93,40 @@ public class Interpreter {
             this.input = input;
     }
     
-    public boolean start() throws BadLocationException {
+    public void start() throws BadLocationException {
         if(scanForLoops(code)) {
             doInterpretation();
-            return true;
         } else {
             log("Mismatched loop brackets", SEVERE);
         }
-        return false;
+    }
+    
+    public String getFinishingStatus() {
+        String message = status;
+        
+        if(steps > 0) {
+            message += String.format(" [Ran through %d instructions, used %d cells]", steps, prevMemorySize);
+        }
+        
+        return message;
     }
     
     public void stop() {
         log("Stopped.", SEVERE);
+        
+        reset();
+    }
+    
+    private void reset() {
         isRunning = false;
+        prevMemorySize = memorySize;
         memorySize = 1;
         memoryPointer = 0;
         codePointer = 0;
         inputPointer = 0;
+        
+        highlighter.removeAllHighlights();
+        
         loopIndex = null;
     }
     
@@ -146,6 +170,7 @@ public class Interpreter {
                     continue;
             } 
             codePointer += 1;
+            steps += 1;
             
             highlightText(codePointer);
             
@@ -158,6 +183,7 @@ public class Interpreter {
         
         isRunning = false;
         log("\nFinished Excecution", SEVERE);
+        reset();
     }    
     
     private boolean scanForLoops(String code) {
@@ -391,6 +417,9 @@ public class Interpreter {
     private void log(Object msg, int importance) {        
         if(importance >= verbosity)
             System.out.println(String.valueOf(msg));
+        
+        if(importance > LOW)
+            status = String.valueOf(msg);
     }    
     
     private String addChars(String str, int pad, String ins, boolean atLeft) {

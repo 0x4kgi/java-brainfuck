@@ -115,11 +115,11 @@
                       <Component id="panelCellSize" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="panelDelay" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                      <EmptySpace min="0" pref="181" max="32767" attributes="0"/>
                   </Group>
                   <Group type="102" alignment="0" attributes="0">
-                      <Component id="jScrollPane2" linkSize="3" min="-2" pref="220" max="-2" attributes="0"/>
-                      <EmptySpace pref="23" max="32767" attributes="0"/>
+                      <Component id="jScrollPane2" max="32767" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
                       <Component id="jLabel3" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="textUserInput" min="-2" max="-2" attributes="0"/>
@@ -133,7 +133,7 @@
                           <Component id="jLabel2" alignment="1" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="jScrollPane1" linkSize="3" min="-2" pref="208" max="-2" attributes="0"/>
+                      <Component id="jScrollPane1" min="-2" pref="208" max="-2" attributes="0"/>
                   </Group>
                   <Component id="listMemoryTape" max="32767" attributes="0"/>
               </Group>
@@ -224,7 +224,7 @@
     </Container>
     <Component class="javax.swing.JLabel" name="labelStatus">
       <Properties>
-        <Property name="text" type="java.lang.String" value="..."/>
+        <Property name="text" type="java.lang.String" value="Ready"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel1">
