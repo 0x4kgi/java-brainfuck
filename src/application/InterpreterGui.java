@@ -5,14 +5,11 @@ import java.awt.Toolkit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.text.BadLocationException;
-import javax.swing.text.DefaultHighlighter;
 import javax.swing.text.Highlighter;
-import javax.swing.text.Highlighter.HighlightPainter;
 
 public class InterpreterGui extends javax.swing.JFrame {
     private final Interpreter i = new Interpreter(5);
     private InterpreterThread interp;
-    private Highlighter highlighter; 
 
     public InterpreterGui() {
         initComponents();
@@ -63,7 +60,6 @@ public class InterpreterGui extends javax.swing.JFrame {
         setTitle("Interpreter");
         setMaximumSize(null);
         setMinimumSize(new java.awt.Dimension(920, 570));
-        setPreferredSize(null);
 
         listMemoryTape.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         listMemoryTape.setFont(new java.awt.Font("Monospaced", 0, 15)); // NOI18N
@@ -287,7 +283,7 @@ public class InterpreterGui extends javax.swing.JFrame {
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                     .addComponent(panelDelay, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                     .addComponent(panelCellSize, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(panelWrapping, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                                    .addComponent(panelWrapping, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(labelStatus)
                         .addGap(0, 0, Short.MAX_VALUE)))
@@ -403,7 +399,7 @@ public class InterpreterGui extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(InterpreterGui.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            Logger.getLogger(InterpreterGui.class.getName()).log(Level.SEVERE, null, ex);
         }
         //</editor-fold>
         //</editor-fold>
@@ -438,12 +434,12 @@ public class InterpreterGui extends javax.swing.JFrame {
         labelStatus.setText("...");
     }
 
-    private void gatherStatistics() {
-        labelStatus.setText(String.format(""));
-        
-        buttonExceute.setEnabled(true);
-        buttonStop.setEnabled(false);
-    }
+//    private void gatherStatistics() {
+//        labelStatus.setText(String.format(""));
+//        
+//        buttonExceute.setEnabled(true);
+//        buttonStop.setEnabled(false);
+//    }
 
     private void setSettings() {
         int power = 1;

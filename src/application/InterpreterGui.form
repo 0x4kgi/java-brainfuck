@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
-<Form version="1.3" maxVersion="1.9" type="org.netbeans.modules.form.forminfo.JFrameFormInfo">
+<Form version="1.9" maxVersion="1.9" type="org.netbeans.modules.form.forminfo.JFrameFormInfo">
   <NonVisualComponents>
     <Component class="javax.swing.ButtonGroup" name="groupBitSize">
     </Component>
@@ -29,9 +29,6 @@
     </Property>
     <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
       <Dimension value="[920, 570]"/>
-    </Property>
-    <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-      <Dimension value="null"/>
     </Property>
   </Properties>
   <SyntheticProperties>
@@ -88,7 +85,7 @@
                               <Group type="103" groupAlignment="0" max="-2" attributes="0">
                                   <Component id="panelDelay" alignment="0" max="32767" attributes="0"/>
                                   <Component id="panelCellSize" alignment="0" max="32767" attributes="0"/>
-                                  <Component id="panelWrapping" min="-2" max="-2" attributes="0"/>
+                                  <Component id="panelWrapping" max="32767" attributes="0"/>
                               </Group>
                           </Group>
                       </Group>
